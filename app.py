@@ -39,7 +39,7 @@ def convert_ofx_to_csv(file):
 def file_download_link(df, filename):
     csv = df.to_csv(index=False)
     b64 = base64.b64encode(csv.encode()).decode()
-    href = f'<a href="data:file/csv;base64,{b64}" download="{filename}" class="download-button">Download {filename}</a>'
+    href = f'<a class="download-link" href="data:file/csv;base64,{b64}" download="{filename}">Download {filename}</a>'
     return href
 
 def generate_filename():
@@ -70,6 +70,9 @@ st.markdown("""
     color: white;
     border-radius: 5px;
     text-decoration: none;
+}
+.download-link {
+    color: white;
 }
 </style>
 """, unsafe_allow_html=True)
