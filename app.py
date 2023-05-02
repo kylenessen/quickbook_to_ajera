@@ -58,8 +58,8 @@ if uploaded_file is not None:
     df_display['Amount'] = df_display['Amount'].apply(lambda x: '{:,.2f}'.format(x))
     st.write(df_display)
     output_filename = generate_filename()
-    st.markdown(file_download_link(df, output_filename), unsafe_allow_html=True)
-
+    st.markdown(file_download_link(df, output_filename), unsafe_allow_html=True, class="download-link")
+    
 # Custom CSS for the download button
 st.markdown("""
 <style>
