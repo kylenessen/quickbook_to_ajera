@@ -7,6 +7,7 @@ from datetime import datetime
 
 pd.options.display.float_format = '{:,.2f}'.format
 
+
 def extract_name(memo_string):
     pattern = r'[A-Z][A-Z ]+'
     match = re.search(pattern, memo_string)
@@ -23,10 +24,12 @@ def extract_name(memo_string):
     else:
         return None
 
+
 def extract_card_number(memo_string):
     pattern = r'\d{4}(?=[A-Z])'
     match = re.search(pattern, memo_string)
     return match.group(0) if match else None
+
 
 def convert_ofx_to_csv(file):
     ofx = OfxParser.parse(file)
@@ -44,8 +47,11 @@ def convert_ofx_to_csv(file):
     df = pd.DataFrame(data)
     df['Cardholder'] = df['Memo'].apply(extract_name)
     df['Card Number'] = df['Memo'].apply(extract_card_number)
+    # Convert the 'Date' column to the desired format
+    df['Date'] = pd.to_datetime(df['Date']).dt.strftime('%-m/%-d/%Y')
 
-    return df[['Date', 'Cardholder', 'Card Number', 'Vendor', 'Amount', 'Type', 'ID','Memo']]
+    return df[['Date', 'Cardholder', 'Card Number', 'Vendor', 'Amount', 'Type', 'ID', 'Memo']]
+
 
 def file_download_link(df, filename):
     csv = df.to_csv(index=False)
@@ -53,24 +59,29 @@ def file_download_link(df, filename):
     href = f'<a href="data:file/csv;base64,{b64}" download="{filename}" class="download-button">Download {filename}</a>'
     return href
 
+
 def generate_filename():
     current_date = datetime.now().strftime('%Y%m%d')
     return f"CreditCard_{current_date}.csv"
 
+
 st.title('QBO/QFX to CSV Converter')
 
-uploaded_file = st.file_uploader('Upload a QBO or QFX file', type=['qbo', 'qfx'])
+uploaded_file = st.file_uploader(
+    'Upload a QBO or QFX file', type=['qbo', 'qfx'])
 
 if uploaded_file is not None:
     with st.spinner('Converting file...'):
         df = convert_ofx_to_csv(uploaded_file)
     st.success('Conversion complete!')
     df_display = df.copy()
-    df_display['Amount'] = df_display['Amount'].apply(lambda x: '{:,.2f}'.format(x))
+    df_display['Amount'] = df_display['Amount'].apply(
+        lambda x: '{:,.2f}'.format(x))
     st.write(df_display)
     output_filename = generate_filename()
-    st.markdown(file_download_link(df, output_filename), unsafe_allow_html=True)
-    
+    st.markdown(file_download_link(df, output_filename),
+                unsafe_allow_html=True)
+
 # Custom CSS for the download button
 st.markdown("""
 <style>
