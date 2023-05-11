@@ -10,7 +10,18 @@ pd.options.display.float_format = '{:,.2f}'.format
 def extract_name(memo_string):
     pattern = r'[A-Z][A-Z ]+'
     match = re.search(pattern, memo_string)
-    return match.group(0) if match else None
+    if match:
+        # Split the matched string into words
+        words = match.group(0).split()
+
+        # If there are at least 2 words, return the first and last one
+        if len(words) >= 2:
+            return "{} {}".format(words[0].capitalize(), words[-1].capitalize())
+        else:
+            # If there's only one word, return it
+            return words[0].capitalize()
+    else:
+        return None
 
 def extract_card_number(memo_string):
     pattern = r'\d{4}(?=[A-Z])'
